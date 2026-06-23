@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirana Pro Enterprise - Smart Retail ERP</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-card">
+            <div id="authTabsHeader" class="auth-tabs">
+                <button id="tabLogin" class="auth-tab active" onclick="switchAuthTab('login')">Login</button>
+                <button id="tabSignUp" class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="auth-form">
+                <div class="form-group">
+                    <label>Username or Mobile Number</label>
+                    <input type="text" id="loginUser" placeholder="Enter username or mobile" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Log In to Dashboard</button>
+                
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="switchAuthTab('forgot')" class="forgot-link">Forgot Password?</a>
+                </div>
+            </form>
+
+            <form id="signupForm" onsubmit="handleSignUp(event)" class="auth-form hidden">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signUpName" placeholder="e.g., Rajesh Kumar" oninput="generateUsername()" required>
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="signUpPhone" placeholder="10-digit mobile" pattern="[0-9]{10}" oninput="generateUsername()" required>
+                </div>
+                <div class="form-group">
+                    <label>Auto-Generated Username</label>
+                    <input type="text" id="signUpUser" placeholder="Username" readonly class="readonly-input">
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="width: 50%;">
+                        <label>Password</label>
+                        <input type="password" id="signUpPass" placeholder="••••••••" required>
+                    </div>
+                    <div class="form-group" style="width: 50%;">
+                        <label>Confirm</label>
+                        <input type="password" id="signUpPassConf" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-pdf btn-block">Create Account</button>
+            </form>
+
+            <form id="forgotForm" onsubmit="handleForgotPassword(event)" class="auth-form hidden">
+                <h4 style="margin-bottom: 15px; text-align: center; color: var(--accent-color);"><i class="fa-solid fa-key"></i> Reset Password</h4>
+                <div class="form-group">
+                    <label>Username or Mobile Number</label>
+                    <input type="text" id="forgotUserOrMobile" placeholder="Enter registered username or mobile" required>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <input type="password" id="forgotNewPass" placeholder="Enter new password" required>
+                </div>
+                <div class="form-group">
+                    <label>Re-type New Password</label>
+                    <input type="password" id="forgotReTypePass" placeholder="Re-type new password" required>
+                </div>
+                <button type="submit" class="btn btn-danger btn-block" style="background: var(--warning-color); color:#fff;"><i class="fa-solid fa-lock-open"></i> Update Password</button>
+                <div style="text-align: center; margin-top: 15px;">
+                    <a href="#" onclick="switchAuthTab('login')" class="forgot-link">← Back to Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="profileOverlay" class="auth-overlay hidden">
+        <div class="auth-card">
+            <div class="profile-modal-header">
+                <h3><i class="fa-solid fa-user-gear"></i> Edit Profile</h3>
+                <button onclick="closeProfileModal()" class="btn-close-modal">&times;</button>
+            </div>
+            <form id="profileForm" onsubmit="saveProfileUpdate(event)">
+                <div class="profile-photo-wrapper">
+                    <img id="profilePreviewModal" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=150" alt="Profile">
+                    <label for="photoUploadInput" class="btn-upload-label"><i class="fa-solid fa-camera"></i> Change Photo</label>
+                    <input type="file" id="photoUploadInput" accept="image/*" onchange="previewUserPhoto(event)" style="display: none;">
+                </div>
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <input type="tel" id="editPhone" pattern="[0-9]{10}" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="customerOverlay" class="auth-overlay hidden">
+        <div class="auth-card customer-card">
+            <div class="profile-modal-header">
+                <h3><i class="fa-solid fa-users"></i> Customer Khaata Diary</h3>
+                <button onclick="closeCustomerModal()" class="btn-close-modal">&times;</button>
+            </div>
+            <div class="add-customer-box">
+                <h4>Add New Customer</h4>
+                <div class="form-row" style="margin-top: 10px;">
+                    <input type="text" id="custName" placeholder="Customer Name">
+                    <input type="tel" id="custPhone" placeholder="Mobile (Optional)" pattern="[0-9]{10}">
+                    <button onclick="addCustomer()" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+                </div>
+            </div>
+            <hr style="margin: 20px 0; border-color: var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                <h4>All Customers Ledger</h4>
+                <div style="display: flex; gap: 10px; flex-grow: 1; justify-content: flex-end; max-width: 500px;">
+                    <input type="text" id="customerSearch" placeholder="🔍 Search Customer..." oninput="displayCustomers()">
+                    <button onclick="window.print()" class="btn btn-pdf btn-sm"><i class="fa-solid fa-print"></i> Print Khaata</button>
+                </div>
+            </div>
+            <div class="table-wrapper" style="max-height: 300px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Customer Name</th>
+                            <th>Items & Log Date</th>
+                            <th>Total Udhaar</th>
+                            <th class="no-print" style="text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTableBody"></tbody>
+                    <tfoot>
+                        <tr style="background: var(--primary-bg); font-weight: 700;">
+                            <td colspan="2" style="text-align: right;">Grand Total (Kul Udhaar):</td>
+                            <td id="customerGrandTotal" style="color: var(--danger-color);">₹0.00</td>
+                            <td class="no-print"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="invoiceOverlay" class="auth-overlay hidden">
+        <div class="invoice-box-popup">
+            <div class="invoice-header">
+                <h2><i class="fa-solid fa-shop"></i> KIRANA PRO INVOICE</h2>
+                <p id="invDateTime"></p>
+            </div>
+            <div class="invoice-meta">
+                <p><strong>Invoice No:</strong> <span id="invNum"></span></p>
+                <p><strong>Billed By:</strong> <span id="invBilledBy"></span></p>
+            </div>
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceItemsBody"></tbody>
+            </table>
+            <div class="invoice-total">
+                <h3>Grand Total: <span id="invGrandTotal">₹0.00</span></h3>
+            </div>
+            <div class="invoice-footer no-print">
+                <button onclick="window.print()" class="btn btn-primary"><i class="fa-solid fa-print"></i> Print Receipt</button>
+                <button onclick="closeInvoiceModal()" class="btn btn-secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainDashboard" class="dashboard dashboard-blurred">
+        <div class="print-title">🛒 Kirana Pro - Official Business Report</div>
+
+        <div id="lowStockAlertBar" class="low-stock-alert-bar hidden">
+            <i class="fa-solid fa-triangle-exclamation blinking"></i> 
+            <span id="lowStockAlertText"></span>
+        </div>
+
+        <header class="main-header">
+            <div class="logo"><i class="fa-solid fa-shop"></i> Kirana<span>Pro ERP</span></div>
+            <div class="header-actions">
+                <div class="user-profile-trigger" onclick="openProfileModal()">
+                    <img id="headerProfileImg" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=150" alt="User">
+                    <span id="welcomeUser"></span>
+                </div>
+                <button onclick="openCustomerModal()" class="btn btn-secondary" style="border-radius:30px;"><i class="fa-solid fa-users"></i> Customer Khaata</button>
+                <button onclick="exportToCSV()" class="btn btn-pdf" style="background:#059669;"><i class="fa-solid fa-file-excel"></i> Backup CSV</button>
+                <button onclick="toggleTheme()" class="btn-theme-toggle" id="themeBtn"><i class="fa-solid fa-moon"></i></button>
+                <button onclick="window.print()" class="btn btn-pdf"><i class="fa-solid fa-file-pdf"></i> Print Stock</button>
+                <button id="logoutBtn" onclick="handleLogout()" class="btn btn-danger hidden"><i class="fa-solid fa-right-from-bracket"></i></button>
+            </div>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--accent-color);"><i class="fa-solid fa-box"></i></div>
+                <div><div class="stat-label">Total Unique Items</div><div class="stat-value" id="statTotalItems">0</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success-color);"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                <div><div class="stat-label">Total Stock Valuation</div><div class="stat-value" id="statStockValue">₹0.00</div></div>
+            </div>
+            <div class="stat-card analytics-card">
+                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;"><i class="fa-solid fa-chart-line"></i></div>
+                <div><div class="stat-label">Today's Total Sales</div><div class="stat-value" id="statTodaySales" style="color: #10b981;">₹0.00</div></div>
+            </div>
+            <div class="stat-card analytics-card">
+                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;"><i class="fa-solid fa-sack-dollar"></i></div>
+                <div><div class="stat-label">Est. Net Profit (20%)</div><div class="stat-value" id="statNetProfit" style="color: #f59e0b;">₹0.00</div></div>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <div class="left-panels">
+                <div class="card form-card">
+                    <h3><i class="fa-solid fa-plus"></i> Add New Item</h3>
+                    <div class="form-group">
+                        <label>Item Name</label>
+                        <input type="text" id="itemName" placeholder="e.g., Ashirvaad Atta 5kg">
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="itemCategory">
+                            <option value="Groceries & Grains">Groceries & Grains</option>
+                            <option value="Spices & Masale">Spices & Masale</option>
+                            <option value="Snacks & Packaged">Snacks & Packaged</option>
+                            <option value="Soaps & Detergents">Soaps & Detergents</option>
+                            <option value="Beverages & Drinks">Beverages & Drinks</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="itemPrice" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Stock Qty</label>
+                            <input type="number" id="itemQty" placeholder="0">
+                        </div>
+                    </div>
+                    <button onclick="addItem()" class="btn btn-primary btn-block"><i class="fa-solid fa-check"></i> Add to Stock</button>
+                </div>
+
+                <div class="card billing-card" style="margin-top: 24px;">
+                    <h3><i class="fa-solid fa-cart-shopping"></i> Quick Billing Cart</h3>
+                    <div class="form-group">
+                        <label>Select Item</label>
+                        <select id="billItemSelect"></select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="width: 60%;">
+                            <label>Quantity to Sell</label>
+                            <input type="number" id="billQty" value="1" min="1">
+                        </div>
+                        <div class="form-group" style="width: 40%; display: flex; align-items: flex-end;">
+                            <button onclick="addToCart()" class="btn btn-secondary btn-block" style="height:44px;"><i class="fa-solid fa-plus"></i> Add</button>
+                        </div>
+                    </div>
+                    
+                    <div id="cartPreviewBox" class="cart-preview-box hidden">
+                        <h4>Current Cart Basket:</h4>
+                        <ul id="cartList" class="cart-list"></ul>
+                        <div class="cart-summary-row">
+                            <span>Total Items: <strong id="cartCount">0</strong></span>
+                            <span>Subtotal: <strong id="cartSubtotal">₹0.00</strong></span>
+                        </div>
+                        <button onclick="checkoutCart()" class="btn btn-pdf btn-block" style="margin-top: 10px;"><i class="fa-solid fa-receipt"></i> Checkout & Print Bill</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card table-card">
+                <div class="table-header-custom">
+                    <h3><i class="fa-solid fa-boxes-stacked"></i> Stock Inventory</h3>
+                    <div class="filter-container">
+                        <input type="text" id="tableSearch" placeholder="🔍 Search items..." oninput="displayItems()">
+                        <select id="tableFilter" onchange="displayItems()">
+                            <option value="All">All Categories</option>
+                            <option value="Groceries & Grains">Groceries & Grains</option>
+                            <option value="Spices & Masale">Spices & Masale</option>
+                            <option value="Snacks & Packaged">Snacks & Packaged</option>
+                            <option value="Soaps & Detergents">Soaps & Detergents</option>
+                            <option value="Beverages & Drinks">Beverages & Drinks</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock Available</th>
+                                <th style="text-align: center;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card history-card">
+            <div class="history-header">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> Activity History Log</h3>
+                <button onclick="clearHistory()" class="btn btn-secondary btn-sm"><i class="fa-solid fa-eraser"></i> Clear Logs</button>
+            </div>
+            <ul id="historyLog" class="history-list"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
